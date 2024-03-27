@@ -32,10 +32,11 @@ var (
 
 // Monitor is an object that uses to set gin server monitor.
 type Monitor struct {
-	slowTime    int32
-	metricPath  string
-	reqDuration []float64
-	metrics     map[string]*Metric
+	disableRecordMetrics []string
+	slowTime             int32
+	metricPath           string
+	reqDuration          []float64
+	metrics              map[string]*Metric
 }
 
 // GetMonitor used to get global Monitor object,
@@ -43,6 +44,9 @@ type Monitor struct {
 func GetMonitor() *Monitor {
 	if monitor == nil {
 		monitor = &Monitor{
+			disableRecordMetrics: []string{
+				defaultMetricPath,
+			},
 			metricPath:  defaultMetricPath,
 			slowTime:    defaultSlowTime,
 			reqDuration: defaultDuration,
@@ -58,6 +62,10 @@ func (m *Monitor) GetMetric(name string) *Metric {
 		return metric
 	}
 	return &Metric{}
+}
+
+func (m *Monitor) AppendDisableRecordMetrics(path ...string) {
+	m.disableRecordMetrics = append(m.disableRecordMetrics, path...)
 }
 
 // SetMetricPath set metricPath property. metricPath is used for Prometheus

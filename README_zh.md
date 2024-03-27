@@ -21,20 +21,20 @@ gin-gonic/gin metrics exporter for Prometheus.
 ## Installation
 
 ```bash
-$ go get github.com/penglongli/gin-metrics
+$ go get github.com/yluchao/gin-metrics
 ```
 
 ## Usage
 
-使用如下代码运行，访问：`http://localhost:8080/metrics` 即可看到暴露出来的监控指标
+使用如下代码运行，访问：`http://localhost:3434/metrics` 即可看到暴露出来的监控指标
 
 ```go
 package main
 
 import (
 	"github.com/gin-gonic/gin"
-	
-	"github.com/penglongli/gin-metrics/ginmetrics"
+
+	"github.com/yluchao/gin-metrics/ginmetrics"
 )
 
 func main() {
@@ -49,16 +49,23 @@ func main() {
 	m.SetSlowTime(10)
 	// +optional set request duration, default {0.1, 0.3, 1.2, 5, 10}
 	// used to p95, p99
-	m.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
+	m.SetDuration([]float64{0.1, 0.5, 1, 3, 5})
+	m.SetMetricPrefix("zhike")
 
-	// set middleware for gin
-	m.Use(r)
+	// Expose adds metric path to a given router
+	m.Expose(r)
+	
+	// use middleware gin
+	m.UseWithoutExposingEndpoint(r)
 
 	r.GET("/product/:id", func(ctx *gin.Context) {
+		res := map[string]interface{}{
 			"productId": ctx.Param("id"),
-		})
+		}
+		ctx.JSON(200, res)
 	})
-	_ = r.Run()
+
+	_ = r.Run(":3434")
 }
 
 ```
@@ -120,6 +127,6 @@ _ = ginmetrics.GetMonitor().GetMetric("example_gauge_metric").Add([]string{"labe
 
 ## Contributing
 
-如果有遇见什么问题，或者需要修改，可以  [新建 ISSUE](https://github.com/penglongli/gin-metrics/issues/new) 
-或者 [新建 PullRequest](https://github.com/penglongli/gin-metrics/pulls). 
+如果有遇见什么问题，或者需要修改，可以  [新建 ISSUE](https://github.com/yluchao/gin-metrics/issues/new) 
+或者 [新建 PullRequest](https://github.com/yluchao/gin-metrics/pulls). 
 

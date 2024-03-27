@@ -39,7 +39,7 @@ Set the `grafana` directory for details.
 ## Installation
 
 ```bash
-$ go get github.com/penglongli/gin-metrics
+$ go get github.com/yluchao/gin-metrics
 ```
 
 ## Usage
@@ -52,7 +52,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/penglongli/gin-metrics/ginmetrics"
+	"github.com/yluchao/gin-metrics/ginmetrics"
 )
 
 func main() {
@@ -168,6 +168,6 @@ func main() {
 
 ## Contributing
 
-If someone has a problem or suggestions, you can submit [new issues](https://github.com/penglongli/gin-metrics/issues/new) 
-or [new pull requests](https://github.com/penglongli/gin-metrics/pulls). 
+If someone has a problem or suggestions, you can submit [new issues](https://github.com/yluchao/gin-metrics/issues/new) 
+or [new pull requests](https://github.com/yluchao/gin-metrics/pulls). 
 
