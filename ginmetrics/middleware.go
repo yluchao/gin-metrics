@@ -133,7 +133,7 @@ func (m *Monitor) ginMetricHandle(ctx *gin.Context, start time.Time) {
 		ctx.FullPath(),
 		r.Method,
 		strconv.Itoa(w.Status()),
-		ctx.GetString("idc"),
+		m.idc,
 		ctx.Request.Host,
 	})
 
@@ -150,7 +150,7 @@ func (m *Monitor) ginMetricHandle(ctx *gin.Context, start time.Time) {
 			ctx.FullPath(),
 			r.Method,
 			strconv.Itoa(w.Status()),
-			ctx.GetString("idc"),
+			m.idc,
 			ctx.Request.Host,
 		})
 	}
@@ -158,7 +158,7 @@ func (m *Monitor) ginMetricHandle(ctx *gin.Context, start time.Time) {
 	// set request duration
 	_ = m.GetMetric(metricRequestDuration).Observe([]string{
 		ctx.FullPath(),
-		ctx.GetString("idc"),
+		m.idc,
 		ctx.Request.Host,
 	}, latency)
 
