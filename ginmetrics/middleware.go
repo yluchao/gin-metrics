@@ -2,7 +2,6 @@ package ginmetrics
 
 import (
 	"fmt"
-	"slices"
 	"strconv"
 	"time"
 
@@ -102,9 +101,11 @@ func (m *Monitor) initGinMetrics() {
 
 // monitorInterceptor as gin monitor middleware.
 func (m *Monitor) monitorInterceptor(ctx *gin.Context) {
-	if slices.Contains(m.disableRecordMetrics, ctx.FullPath()) {
-		ctx.Next()
-		return
+	for _, path := range m.disableRecordMetrics {
+		if path == ctx.FullPath() {
+			ctx.Next()
+			return
+		}
 	}
 	startTime := time.Now()
 
