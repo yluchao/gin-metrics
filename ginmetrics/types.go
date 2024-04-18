@@ -32,7 +32,10 @@ var (
 
 // Monitor is an object that uses to set gin server monitor.
 type Monitor struct {
-	idc                  string
+	ins                  string // 运行实例
+	idc                  string // 机房
+	prefix               string
+	suffix               string
 	disableRecordMetrics []string
 	slowTime             int32
 	metricPath           string
@@ -60,18 +63,43 @@ func GetMonitor() *Monitor {
 
 // GetMetric used to get metric object by metric_name.
 func (m *Monitor) GetMetric(name string) *Metric {
-	if metric, ok := m.metrics[name]; ok {
+	metricName := m.GetMetricFullName(name)
+	if metric, ok := m.metrics[metricName]; ok {
 		return metric
 	}
 	return &Metric{}
+}
+
+func (m *Monitor) SetInstance(ins string) {
+	m.ins = ins
+}
+
+func (m *Monitor) GetInstance() (ins string) {
+	ins = m.ins
+	return
 }
 
 func (m *Monitor) AppendDisableRecordMetrics(path ...string) {
 	m.disableRecordMetrics = append(m.disableRecordMetrics, path...)
 }
 
+func (m *Monitor) PathDisableRecordMetrics(p string) (res bool) {
+	for _, path := range m.disableRecordMetrics {
+		if p == path {
+			res = true
+			return
+		}
+	}
+	return
+}
+
 func (m *Monitor) SetIdc(idc string) {
 	m.idc = idc
+}
+
+func (m *Monitor) GetIdc() (idc string) {
+	idc = m.idc
+	return
 }
 
 // SetMetricPath set metricPath property. metricPath is used for Prometheus
@@ -93,27 +121,20 @@ func (m *Monitor) SetDuration(duration []float64) {
 }
 
 func (m *Monitor) SetMetricPrefix(prefix string) {
-	metricRequestTotal = prefix + metricRequestTotal
-	metricRequestUVTotal = prefix + metricRequestUVTotal
-	metricURIRequestTotal = prefix + metricURIRequestTotal
-	metricRequestBody = prefix + metricRequestBody
-	metricResponseBody = prefix + metricResponseBody
-	metricRequestDuration = prefix + metricRequestDuration
-	metricSlowRequest = prefix + metricSlowRequest
+	m.prefix = prefix
 }
 
 func (m *Monitor) SetMetricSuffix(suffix string) {
-	metricRequestTotal += suffix
-	metricRequestUVTotal += suffix
-	metricURIRequestTotal += suffix
-	metricRequestBody += suffix
-	metricResponseBody += suffix
-	metricRequestDuration += suffix
-	metricSlowRequest += suffix
+	m.suffix = suffix
+}
+
+func (m *Monitor) GetMetricFullName(metricName string) string {
+	return m.prefix + metricName + m.suffix
 }
 
 // AddMetric add custom monitor metric.
 func (m *Monitor) AddMetric(metric *Metric) error {
+	metric.Name = m.GetMetricFullName(metric.Name)
 	if _, ok := m.metrics[metric.Name]; ok {
 		return errors.Errorf("metric '%s' is existed", metric.Name)
 	}

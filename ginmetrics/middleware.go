@@ -15,8 +15,8 @@ var (
 	metricRequestTotal    = "gin_request_total"
 	metricRequestUVTotal  = "gin_request_uv_total"
 	metricURIRequestTotal = "gin_uri_request_total"
-	metricRequestBody     = "gin_request_body_total"
-	metricResponseBody    = "gin_response_body_total"
+	// metricRequestBody     = "gin_request_body_total"
+	// metricResponseBody    = "gin_response_body_total"
 	metricRequestDuration = "gin_request_duration"
 	metricSlowRequest     = "gin_slow_request_total"
 
@@ -70,7 +70,7 @@ func (m *Monitor) initGinMetrics() {
 		Type:        Counter,
 		Name:        metricURIRequestTotal,
 		Description: "all the server received request num with every uri.",
-		Labels:      []string{"uri", "method", "code", "idc", "instance"},
+		Labels:      []string{"uri", "method", "code", "idc", "instance", "biz_code"},
 	})
 	// _ = monitor.AddMetric(&Metric{
 	// 	Type:        Counter,
@@ -95,17 +95,15 @@ func (m *Monitor) initGinMetrics() {
 		Type:        Counter,
 		Name:        metricSlowRequest,
 		Description: fmt.Sprintf("the server handled slow requests counter, t=%d.", m.slowTime),
-		Labels:      []string{"uri", "method", "code", "idc", "instance"},
+		Labels:      []string{"uri", "method", "code", "idc", "instance", "biz_code"},
 	})
 }
 
 // monitorInterceptor as gin monitor middleware.
 func (m *Monitor) monitorInterceptor(ctx *gin.Context) {
-	for _, path := range m.disableRecordMetrics {
-		if path == ctx.FullPath() {
-			ctx.Next()
-			return
-		}
+	if m.PathDisableRecordMetrics(ctx.FullPath()) {
+		ctx.Next()
+		return
 	}
 	startTime := time.Now()
 
@@ -135,7 +133,8 @@ func (m *Monitor) ginMetricHandle(ctx *gin.Context, start time.Time) {
 		r.Method,
 		strconv.Itoa(w.Status()),
 		m.idc,
-		ctx.Request.Host,
+		m.GetInstance(),
+		ctx.GetString("biz_code"),
 	})
 
 	// set request body size
@@ -152,7 +151,8 @@ func (m *Monitor) ginMetricHandle(ctx *gin.Context, start time.Time) {
 			r.Method,
 			strconv.Itoa(w.Status()),
 			m.idc,
-			ctx.Request.Host,
+			m.GetInstance(),
+			ctx.GetString("biz_code"),
 		})
 	}
 
@@ -160,7 +160,7 @@ func (m *Monitor) ginMetricHandle(ctx *gin.Context, start time.Time) {
 	_ = m.GetMetric(metricRequestDuration).Observe([]string{
 		ctx.FullPath(),
 		m.idc,
-		ctx.Request.Host,
+		m.GetInstance(),
 	}, latency)
 
 	// set response size
