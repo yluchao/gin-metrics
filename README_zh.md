@@ -120,7 +120,6 @@ _ = ginmetrics.GetMonitor().GetMetric("example_gauge_metric").Add([]string{"labe
 
 `Counter` 类型的监控指标，可以使用 `Inc` 和 `Add` 方法，但是不能使用 `SetGaugeValue` 方法
 
-
 ### Histogram and Summary
 
 对于 `Histogram` 和 `Summary` 类型的监控指标，需要用 `Observe` 方法来设置监控值。
@@ -129,4 +128,3 @@ _ = ginmetrics.GetMonitor().GetMetric("example_gauge_metric").Add([]string{"labe
 
 如果有遇见什么问题，或者需要修改，可以  [新建 ISSUE](https://github.com/yluchao/gin-metrics/issues/new) 
 或者 [新建 PullRequest](https://github.com/yluchao/gin-metrics/pulls). 
-
