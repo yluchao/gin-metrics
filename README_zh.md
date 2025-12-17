@@ -128,3 +128,6 @@ _ = ginmetrics.GetMonitor().GetMetric("example_gauge_metric").Add([]string{"labe
 
 如果有遇见什么问题，或者需要修改，可以  [新建 ISSUE](https://github.com/yluchao/gin-metrics/issues/new) 
 或者 [新建 PullRequest](https://github.com/yluchao/gin-metrics/pulls). 
+
+
+
