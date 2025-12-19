@@ -170,5 +170,3 @@ func main() {
 
 If someone has a problem or suggestions, you can submit [new issues](https://github.com/yluchao/gin-metrics/issues/new) 
 or [new pull requests](https://github.com/yluchao/gin-metrics/pulls). 
-
-sssss
